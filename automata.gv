@@ -1,0 +1,11 @@
+// Automata for ab|c
+digraph {
+	S [shape=point]
+	A [shape=circle]
+	B [shape=doublecircle]
+	C [shape=circle]
+	S -> A
+	A -> B [label=a]
+	A -> C [label=c]
+	C -> B [label=b]
+}
