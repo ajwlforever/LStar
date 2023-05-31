@@ -1,38 +1,8 @@
-print("Ss") 
+ 
+from  .models.dfa import  DFA
 
 
 
-dic = {
-    'q0' : {
-        'a' : 'q1'
-    }
-}
-
-print(dic['q0']['a'])
-
-
-
-tr = {
-    ('q0','a') : 'q1'
-}
-
-print(tr[('q0','a')])
-
-Q = ['q0','q1','q2']
-ab = ['a','b']
-
-print(tr.keys())
-keys = tr.keys()
-for key in keys:
-    state = key[0]
-    action = key[1]
-    print(state,action)
-
-print(set(ab))
-
-
-
-from models.dfa import  DFA
 def testDfa():
     # test the dfa
     # test the constructor
