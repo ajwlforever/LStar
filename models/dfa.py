@@ -12,21 +12,24 @@
  
 # import Utils.PitureUtil
 
-1
+from typing import List
+
+
 class DFA():
-    def __init__(self,alpahbet : set, Q: list[str], q0 : str, F : list[str], delta: dict) -> None:
+    def __init__(self,alpahbet : set, Q: List[str], q0 : str, F : List[str], delta: dict) -> None:
         self.alpahbet = alpahbet
         self.Q = Q
         self.q0 = q0
         self.F = F
         self.delta = delta
     
-
-
     ## 增加新的状态，符号，转换，终态，初态
     def add_state(self, q):
         # add a new state
         self.Q.append(q)
+    def set_desp(self, desp):
+        # set the description of the dfa
+        self.desp = desp
 
     def add_alpahbet(self, a):
         # add a new symbol
@@ -60,7 +63,8 @@ class DFA():
         return self.alpahbet
     def get_Q(self):
         return self.Q
-    
+    def get_desp(self):
+        return self.desp
     # 检查转换函数是否合法
     # 所有的边都在Q x alpahbet中, 所有的边的终点都在Q中 
     def is_valid_delta(self):
