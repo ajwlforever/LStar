@@ -1,5 +1,5 @@
 # Purpose: Contains the model for the DFA
-# author: ajwlforver
+# author: 虞启贤
 # version: 0.1
 # date: 2023-05-29
 
@@ -153,3 +153,4 @@ class DFA():
        
 
 
+ 
