@@ -6,6 +6,7 @@
 #
 #
  
+import itertools
 from models.dfa import DFA
 from models.sut import SUT
 import pandas as pd
@@ -20,16 +21,21 @@ class OTTable():
     def __init__(self, S: set, E: set, transition : dict, alphabet : set) -> None: 
         self.S = S
         self.E = E
-        
+        self.transition_S1 = dict()
         self.transition = transition
         self.alphabet = alphabet
-
+        self.S1 = alphabet
         pass 
- 
-    def showTable(self):
-        df = pd.DataFrame(self.transition)
-        df.transpose()
+     
+     
+    def showTable(self): 
+
+        print("S Length = ", len(self.S))
+        df = pd.DataFrame(self.transition) 
+        df1 = pd.DataFrame(self.transition_S1)
         print(df.T)
+        print(df1.T)
+        print(self.transition)
         return None
     
     #
@@ -49,10 +55,8 @@ class OTTable():
     def update_transition(self,sut : SUT):
         for s in self.S:
             for e in self.E:
-                # 去掉ε 
-                se = self.del_epsilon(s+e)
-                print(se)
-                res = sut.membership_query(se)
+                 
+                res = sut.membership_query(s+e)
                 
                 self.transition.update(
                     {
@@ -61,19 +65,12 @@ class OTTable():
                         }
                     }
                 )
-        S1 = set()
-        for s in self.S:
-            for e in self.alphabet:
-                S1.add(s+e)  # S1 = S·Σ 
-        for s in S1:
+        for s in self.S1:
             for e in self.E:
-                # 去掉ε
-                se = self.del_epsilon(s+e)
                 
-                print(se)
-                res = sut.membership_query(se)
+                res = sut.membership_query(s+e)
             
-                self.transition.update(
+                self.transition_S1.update(
                     {
                         s : {
                             e : res
@@ -92,7 +89,7 @@ class OTTable():
     # 对于每一个t∈S⋅Σ，在S中都有一个对应的s使得row(s) = row(t)，我们称观察表（S,E,row）闭合。
     # 
     def check_cloesed(self):
-
+        
         return True
     # 检验一致性
     def check_consistent(self):
@@ -100,25 +97,30 @@ class OTTable():
 
 # 成员查询: 是一个完善OT表中transition的过程
 # 在目标黑盒系统进行对应查询，T(s,e) = 1 / 0.
-# transition函数的值就是OT表中需通过membership query查询的每个entry，每个entry就代表着learner向SUT查询过该对应string是否存在于正则语言L中。
+# transition函数的值就是OT表中需通过membership query查询的每个entry，
+# 每个entry就代表着learner向SUT查询过该对应string是否存在于正则语言L中。
 # sut: 目标黑盒系统
 # otTable: OT表
 def membership_query(sut: SUT, otTable):
+    otTable.update_transition(sut)
     return None
 
-
+# 从Ot表中构造dfa
 def construct_dfa(otTable):
     return None
-def get_counter(sut, dfa):
-    return None
-#等价查询
+ 
+    
+
+#等价查询: 判断构造的dfa是否等价于黑盒系统
+# 从OT表中构造DFA，然后从目标黑盒系统找到一个反例，将其添加到OT表中
 def equivalence_query(sut: SUT, otTable):
     # 从OT表中构造DFA
     dfa = construct_dfa(otTable)
     # 从目标黑盒系统找到一个反例
-    if  t := get_counter(sut, dfa) != None:
-        # 将 t 及其所有前缀添加到OT表中
-        # TODO
+    if  t := sut.get_counter(dfa) != None:
+        # 将 t 及其所有前缀添加到OT表中 
+        for i in range(len(t)):
+            otTable.add_prefix(t[:i])
         #  使用Membership_query 扩展 transition 到 (S U S·Σ) × E 
         membership_query(sut, otTable)
         return None
@@ -140,12 +142,13 @@ def learn_dfa(sut, alphabet : set):
     ot = initial_otTable(sut, alphabet) # 初始化OT表 
 
     #重复这个过程 直到teacher认为sut == M
-    while  dfa := equivalence_query(sut, ot) != None:
+    while  True:
         while ot.check_property() == False:
             if ot.closed == False:
-                #找 row(s1) == row(s2) 且 s1 != s2 且 transition(s1, e) != transition(s2, e) , e∈E, s1,s2∈S, 添加 ae 到 E
+                #找 rows(S·Σ)⊆rows(S)
                 # TODO
-
+                
+            
                 #  使用Membership_query 扩展 transition 到 (S U S·Σ) × E 
                 membership_query(sut, ot)
                 pass
@@ -158,8 +161,16 @@ def learn_dfa(sut, alphabet : set):
                 # 使用Membership_query 扩展 transition 到 (S U S·Σ) × E
                 membership_query(sut, ot)
 
-        # 当ot表满足闭合性和一致性时，将ot转换成自动机 M
-        # TODO
-        # 等价查询找反例
+        # 当ot表满足闭合性和一致性时，将ot转换成自动机 M 
+        # 等价查询找反例 , tracher 认为sut == M 则推出循环
+        if dfa := equivalence_query(sut, ot) == None:
+            break
         
-
+# 生成所有的字符串
+def generate_all_strings(blackbox_accept_alphabet, blackbox_accept_length):
+    # 生成所有的字符串
+    # 生成所有的字符串
+    all_strings = []
+    for i in range(1, blackbox_accept_length+1):
+        all_strings += list(map(''.join, itertools.product(blackbox_accept_alphabet, repeat=i)))
+    return all_strings
