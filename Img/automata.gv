@@ -4,6 +4,7 @@ digraph {
 	A [shape=circle]
 	B [shape=doublecircle]
 	C [shape=circle]
+	B [shape=circle]
 	S -> A
 	A -> B [label=a]
 	A -> C [label=c]

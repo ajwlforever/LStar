@@ -65,3 +65,5 @@ def testDfa():
     print("dfa run 'abab':  " ,  dfa.run('abab'))
 
 testDfa()
+print(__name__)
+print(__package__)

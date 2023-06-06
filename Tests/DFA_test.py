@@ -1,7 +1,6 @@
  
-from  .models.dfa import  DFA
-
-
+from  models.dfa import  DFA
+ 
 
 def testDfa():
     # test the dfa
@@ -33,5 +32,4 @@ def testDfa():
 
     # 测试 run 函数
     print("dfa run 'abab':  " ,  dfa.run('abab'))
-
-testDfa()
+ 

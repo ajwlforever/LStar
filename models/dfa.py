@@ -144,7 +144,7 @@ class DFA():
         return q       
     
     # 检查dfa是否接受字符串
-    def is_accept(self, s):
+    def accept(self, s):
         # return if the string is accepted
         q = self.run(s)
         if q == None:
